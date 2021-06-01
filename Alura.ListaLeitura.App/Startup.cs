@@ -1,6 +1,7 @@
 ﻿using Alura.ListaLeitura.App.Repositorio;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Alura.ListaLeitura.App
@@ -9,8 +10,29 @@ namespace Alura.ListaLeitura.App
     {
         public void Configure(IApplicationBuilder app)
         {
-            app.Run(LivrosParaLer); 
+            app.Run(Roteamento); 
 
+        }
+
+        public Task Roteamento(HttpContext context)
+        {
+            var _repo = new LivroRepositorioCSV();
+            var caminhoAtendidos = new Dictionary<string, RequestDelegate>
+            {
+                { "/Livros/ParaLer",  LivrosParaLer },
+                { "/Livros/Lendo",  LivrosLidos },
+                { "/Livros/Lidos",  LivrosLidos }
+            };
+
+
+            if (caminhoAtendidos.ContainsKey(context.Request.Path))
+            {
+                var metodo = caminhoAtendidos[context.Request.Path];
+                return metodo.Invoke(context);
+            }
+
+            context.Response.StatusCode = 404;
+            return context.Response.WriteAsync("Caminho inexistente");
         }
 
         public Task LivrosParaLer(HttpContext context)
@@ -18,5 +40,18 @@ namespace Alura.ListaLeitura.App
             var _repo = new LivroRepositorioCSV();
             return context.Response.WriteAsync(_repo.ParaLer.ToString());
         }
+
+        public Task LivrosLendo(HttpContext context)
+        {
+            var _repo = new LivroRepositorioCSV();
+            return context.Response.WriteAsync(_repo.Lendo.ToString());
+        }
+
+        public Task LivrosLidos(HttpContext context)
+        {
+            var _repo = new LivroRepositorioCSV();
+            return context.Response.WriteAsync(_repo.Lidos.ToString());
+        }
+        
     }
 }
