@@ -52,9 +52,13 @@ namespace Alura.ListaLeitura.App
         {
             var html = @"
             <html>
-                <form action='Cadastro/Incluir'>
+                <form action='/Cadastro/Incluir'>
+                <label>Titulo: </label>
                     <input name='titulo'/>
+                <br/>
+                <label>Autor: </label>
                     <input name='autor'/>
+                <br/>
                     <button>Gravar</button>
                 </form>
             </html>";
